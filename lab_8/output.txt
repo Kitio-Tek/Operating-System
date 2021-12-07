@@ -1,0 +1,9 @@
+../lab_7/Ex01.c:8:int main(int argc, char *argv[]){
+../lab_7/Ex01.c~:8:int main(int argc, char *argv[]){
+../lab_7/Ex02.c:87:void main (int argc, void **argv) {
+../lab_7/Ex02.c~:87:void main (int argc, void **argv) {
+../lab_7/Ex03.c:118:void main(int argc, void **argv){
+../lab_7/Ex03.c~:118:void main(int argc, void **argv){
+../lab_7/Ex07:8:int main(int argc, char *argv[]){
+../lab_7/Ex07.c:8:int main(int argc, char *argv[]){
+../lab_7/l07e03.c:118:void main (int argc,void **argv) {

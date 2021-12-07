@@ -1,0 +1,141 @@
+#include <stdlib.h>
+#include <stdio.h>
+#include <assert.h>
+#include <pthread.h>
+
+#define MAXPATH 200
+#define MAXSIZE 1000
+
+int **m_global;
+int **thflags_global;
+
+struct _threadargs{
+  int id;
+  char filein[MAXPATH];
+  char fileout[MAXPATH];
+};
+
+typedef struct _threadargs Threadargs;
+
+int *read_file(char *filename, int *size){
+  int *vett;
+  int s,v,i=0;
+  FILE *fp;
+  fp=fopen(filename,"r");
+  assert(fp!=NULL);
+  fscanf(fp,"%d",&s);
+  vett=(int *)malloc(s*sizeof(int));
+  while(fscanf(fp,"%d",&v)>0){
+    vett[i]=v;
+    i++;
+  }
+
+  *size=s;
+  fclose(fp);
+  return vett;
+
+}
+void sort(int *vett,int size){
+  int i,j;
+  for(i=0;i<size;i++){
+    for(j=0;j<i;j++){
+      if(vett[i]<vett[j])
+	{ int temp=vett[i];
+	  vett[i]=vett[j];
+	  vett[j]=temp;
+
+	}
+    }
+  }
+
+
+}
+void write_file(int *vett, int size, char *filename){
+  int i;
+  FILE *fp;
+  printf("write %s\n",filename);
+  fp=fopen(filename,"w");
+  for(i=0;i<size;i++)
+    fprintf(fp,"%d\n",vett[i]);
+
+  fclose(fp);
+}
+
+void *tf(void *arg){
+  int i;
+  Threadargs *thargs;
+  thargs=(Threadargs *)arg;
+  char *filename;
+  filename=thargs->filein;
+  char fileout[200];
+  int *vett=NULL, size;
+  vett=read_file(filename,&size);
+  assert(vett!=NULL);
+  sort(vett,size);
+
+  m_global[thargs->id][0]=size;
+  for(i=1;i<=size;i++)
+    m_global[thargs->id][i]=vett[i-1];
+
+  thflags_global[thargs->id]=1;
+
+  free(vett);
+  free(thargs);
+  pthread_exit((int *)NULL);
+}
+
+int merge(int *v1, int *vmerge, int size_v1, int size_v2){
+  int size_vmerge;
+  int i, j ,k ;
+  i=j=k=0;
+
+  while(i<size_v1 && j<size_v2){
+    if(v1[i]<v2[j])
+      vmerge[k++]=v1[i++];
+    else
+      vmerge[k++]=v2[j++];
+  }
+
+  while(i<size_v1)
+    vmerge[k++]=v1[i++];
+
+  while(j<size_v2)
+    vmerge[k++]=v2[j++];
+
+  size_vmerge=size_v1+size_v2;
+
+  return size_vmerge;
+}
+void print(int *vett, int size){
+  int i;
+  for(i=0;i<size;i++)
+    printf("%d", vett[i]);
+
+  printf("\n");
+
+}
+
+void main(int argc, void **argv){
+  pthread_t *threadID;
+  Threadargs *ta;
+  void *exitstatus;
+  int i,nt,m,indexr, indexc,index;
+
+  nt=atoi(argv[1]);
+  threadID=(pthread_t *)malloc(nt*sizeof(pthread_t));
+
+  thflags_global=(int *)malloc(nt*sizeof(int));
+
+  for(m=0;m<nt;m++)
+    thflags_global[m]=0;
+
+  printf("alloc m_global\n");
+  m_global=(int**)malloc(nt*sizeof(int*));
+
+  for(index=0;index<nt;index++)
+    m_global[index]=(int *)malloc(MAXSIZE*sizeof(int));
+
+  
+
+
+}
